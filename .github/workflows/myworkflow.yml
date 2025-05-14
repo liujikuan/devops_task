@@ -27,3 +27,9 @@ jobs:
 
       - name: Display running containers
         run: docker ps
+
+      - name: Run tests
+        run: |
+          pip install pytest
+          sleep 2
+          pytest tests
