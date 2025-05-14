@@ -36,5 +36,5 @@ jobs:
           echo "日志结束"
           docker exec mpaisa-app-api_container curl -v http://localhost:5000/healthz
           curl -v http://localhost:5000/healthz || echo "5000 port cannnot be accessed"
-          netstat -anpt | grep 5000
+          pytest tests
           
