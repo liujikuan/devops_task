@@ -3,8 +3,8 @@ name: python-app
 
 on: [push,workflow_dispatch]
 env:
-  IMAGE_NAME: mpaisa-app-api
-  CONTAINER_NAME: mpaisa-app-api_container
+  IMAGE_NAME: python-demo
+  CONTAINER_NAME: python-demo_container
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,10 +31,6 @@ jobs:
       - name: Run tests
         run: |
           pip install pytest
-          echo "pytest has been installed"
-          docker logs mpaisa-app-api_container
-          echo "日志结束"
-          docker exec mpaisa-app-api_container curl -v http://localhost:5000/healthz
           curl -v http://localhost:5000/healthz || echo "5000 port cannnot be accessed"
           pytest tests
           
