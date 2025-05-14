@@ -19,3 +19,11 @@ jobs:
         run: |
           echo "Building Docker image..."
           docker build -t $IMAGE_NAME .
+
+      - name: Run Docker container
+        run: |
+          echo "Running Docker container with port mapping..."
+          docker run -d --name $CONTAINER_NAME -p 80:5000 $IMAGE_NAME
+
+      - name: Display running containers
+        run: docker ps
