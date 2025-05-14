@@ -1,0 +1,21 @@
+# .github/workflows/main.yml
+name: python-app
+
+on: [push,workflow_dispatch]
+env:
+  IMAGE_NAME: mpaisa-app-api
+  CONTAINER_NAME: mpaisa-app-api_container
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Docker availability
+        run: docker info || echo "No Docker access"
+
+      - name: Build Docker image
+        run: |
+          echo "Building Docker image..."
+          docker build -t $IMAGE_NAME .
