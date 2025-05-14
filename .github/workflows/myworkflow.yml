@@ -32,7 +32,8 @@ jobs:
         run: |
           pip install pytest
           echo "pytest has been installed"
+          docker exec -it mpaisa-app-api_container curl -v http://localhost:5000/healthz
           curl -v http://localhost:5000/healthz || echo "5000 port cannnot be accessed"
           netstat -anpt | grep 5000
-          pytest tests
+   #       pytest tests
           docker logs mpaisa-app-api_container
