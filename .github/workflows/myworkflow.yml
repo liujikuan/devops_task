@@ -7,6 +7,9 @@ env:
   CONTAINER_NAME: python-demo_container
 jobs:
   build:
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
