@@ -56,7 +56,7 @@ jobs:
           docker push $IMAGE_ID
 
       - name: deploy to azure webapp 
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3.0.1
         with:
           app-name: python-demo
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
