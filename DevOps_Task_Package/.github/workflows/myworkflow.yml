@@ -1,0 +1,43 @@
+name: python-app
+
+on: [push, workflow_dispatch]
+env:
+  IMAGE_NAME: python-demo
+  CONTAINER_NAME: python-demo_container
+  REGISTRY: ghcr.io
+  REPOSITORY: ${{ github.repository }}
+  TAG: latest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login $REGISTRY -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: |
+          echo "Building Docker image..."
+          docker build -t $REGISTRY/$REPOSITORY:$TAG .
+
+      - name: Push Docker image
+        run: |
+          echo "Pushing Docker image to registry..."
+          docker push $REGISTRY/$REPOSITORY:$TAG
+
+      - name: Run Docker container
+        run: |
+          echo "Running Docker container with port mapping..."
+          docker run -d --name $CONTAINER_NAME -p 5000:5000 $REGISTRY/$REPOSITORY:$TAG
+
+      - name: Display running containers
+        run: docker ps
+
+      - name: Run tests
+        run: |
+          pip install pytest
+          curl -v http://localhost:5000/healthz || echo "5000 port cannot be accessed"
+          pytest tests

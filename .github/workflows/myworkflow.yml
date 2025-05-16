@@ -23,6 +23,24 @@ jobs:
           echo "Building Docker image..."
           docker build -t $IMAGE_NAME .
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag Docker image for GHCR
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:latest
+          docker tag $IMAGE_NAME $IMAGE_ID
+
+      - name: Push Docker image to GHCR
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:latest
+          docker push $IMAGE_ID
+
+
       - name: Run Docker container
         run: |
           echo "Running Docker container with port mapping..."
