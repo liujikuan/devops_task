@@ -56,7 +56,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          image-ref:  ${{ env.IMAGE_NAME }}
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -73,12 +73,12 @@ jobs:
 
       - name: Tag Docker image for GHCR
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker tag $IMAGE_NAME $IMAGE_ID
 
       - name: Push Docker image to GHCR
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push $IMAGE_ID
   test_CodeQL:
     runs-on: ubuntu-latest
@@ -125,6 +125,6 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
  
