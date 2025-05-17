@@ -47,6 +47,22 @@ jobs:
           pip install pytest
           curl -v http://localhost:5000/healthz || echo "5000 port cannnot be accessed"
           pytest tests
+
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          flake8 app/
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref:  ${{ env.IMAGE_NAME }}
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
           
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -57,14 +73,14 @@ jobs:
 
       - name: Tag Docker image for GHCR
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker tag $IMAGE_NAME $IMAGE_ID
 
       - name: Push Docker image to GHCR
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push $IMAGE_ID
-  test:
+  test_CodeQL:
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -94,12 +110,14 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
+
+          
   deploy:
     runs-on: ubuntu-latest
     environment:
       name: 'prod'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    needs: [build, test]
+    needs: [build, test_CodeQL]
     steps:
       - name: deploy to Azure webapp
         uses: azure/webapps-deploy@v3.0.1
@@ -107,5 +125,6 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
+ 

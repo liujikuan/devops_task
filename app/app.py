@@ -2,9 +2,11 @@ from flask import Flask
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def hello():
-    return "Hello, world! This is a Flask app running in a Docker container."
+    return "Hello, world! "
+
 
 @app.route("/healthz")
 def health():
