@@ -8,9 +8,6 @@ env:
   AZURE_WEBAPP_NAME: python-cicd-demo
 jobs:
   build:
-    environment:
-      name: 'prod'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       contents: read
       pull-requests: write
@@ -51,19 +48,33 @@ jobs:
 
       - name: Tag Docker image for GHCR
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:latest
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
           docker tag $IMAGE_NAME $IMAGE_ID
 
       - name: Push Docker image to GHCR
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:latest
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
           docker push $IMAGE_ID
-
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: 'prod'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    needs: build
+    steps:
       - name: deploy to Azure webapp
         uses: azure/webapps-deploy@v3.0.1
         id: deploy-to-webapp
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: ghcr.io/${{ github.repository_owner }}/python-demo:latest
+          images: ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
 
+      - name: Check deployment status
+        run: |
+          echo "Deployment status:"
+          az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --query state
+          echo "Web app URL:"
+          az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --query defaultHostName
+          echo "Deployment logs:"
+          az webapp log tail --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --query "value[0].properties.message" -o table
