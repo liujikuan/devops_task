@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return "Hello, world! This is a Flask app running in a Docker container. welcome"
+    return "Hello, world! This is a Flask app running in a Docker container."
 
 
 @app.route("/healthz")
