@@ -1,7 +1,16 @@
 # .github/workflows/main.yml
 name: python-app
 
-on: [push,workflow_dispatch]
+on: 
+  push:
+    branches:
+      - 'feature-*'
+      - develop
+      - staging
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 env:
   IMAGE_NAME: python-demo
   CONTAINER_NAME: python-demo_container
@@ -55,12 +64,42 @@ jobs:
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
           docker push $IMAGE_ID
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      packages: read
+      # only required for workflows in private repositories
+      actions: read
+      contents: read    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - language: actions
+          build-mode: none
+        - language: python
+          build-mode: none
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
   deploy:
     runs-on: ubuntu-latest
     environment:
       name: 'prod'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    needs: [build, analyze]
+    needs: [build, test]
     steps:
       - name: deploy to Azure webapp
         uses: azure/webapps-deploy@v3.0.1
