@@ -60,7 +60,7 @@ jobs:
     environment:
       name: 'prod'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    needs: build
+    needs: [build, analyze]
     steps:
       - name: deploy to Azure webapp
         uses: azure/webapps-deploy@v3.0.1
@@ -70,11 +70,3 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: ghcr.io/${{ github.repository_owner }}/python-demo:${{ github.sha }}
 
-      - name: Check deployment status
-        run: |
-          echo "Deployment status:"
-          az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --query state
-          echo "Web app URL:"
-          az webapp show --name ${{ env.AZURE_WEBAPP_NAME }} --query defaultHostName
-          echo "Deployment logs:"
-          az webapp log tail --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --query "value[0].properties.message" -o table
