@@ -117,7 +117,7 @@ jobs:
     environment:
       name: 'prod'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    needs: [build, test]
+    needs: [build, test_CodeQL]
     steps:
       - name: deploy to Azure webapp
         uses: azure/webapps-deploy@v3.0.1
