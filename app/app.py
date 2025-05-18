@@ -1,16 +1,23 @@
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def hello():
-    return "Hello, world! This is a Flask app running in a Docker container."
+    return "Hello, world! This is a Flask app running in a Docker container. Enjoy it!"
 
 
 @app.route("/healthz")
 def health():
     return "OK", 200
+
+
+@app.route("/greet")
+def greet():
+    name = request.args.get("name", "Guest")
+    safe_name = ''.join(c for c in name if c.isalnum() or c.isspace())
+    return f"Hello, {safe_name}!"
 
 
 if __name__ == "__main__":
