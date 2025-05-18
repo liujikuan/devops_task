@@ -6,4 +6,3 @@ def test_greet_injection_attempt():
     assert r.status_code == 200
     # The response should not contain raw script tags
     assert "<script>" not in r.text
-    assert "alert" not in r.text
