@@ -16,7 +16,6 @@ def health():
 @app.route("/greet")
 def greet():
     name = request.args.get("name", "Guest")
-    # Very basic sanitization for demonstration (do not use eval or exec in production!)
     safe_name = ''.join(c for c in name if c.isalnum() or c.isspace())
     return f"Hello, {safe_name}!"
 
