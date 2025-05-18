@@ -1,5 +1,6 @@
 import requests
 
+## Test SQL injection attempt
 def test_greet_injection_attempt():
     malicious_input = "<script>alert('x')</script>"
     r = requests.get(f"http://localhost:5000/greet?name={malicious_input}")
