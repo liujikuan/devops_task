@@ -50,6 +50,8 @@ jobs:
       - name: Run tests
         run: |
           pip install pytest
+          echo "---------print container logs............."
+          docker logs $CONTAINER_NAME
           curl -v http://localhost:5000/healthz || echo "5000 port cannnot be accessed"
           pytest tests
 
