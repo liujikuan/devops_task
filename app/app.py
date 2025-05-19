@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
@@ -10,7 +10,7 @@ def hello():
 
 @app.route("/healthz")
 def health():
-    return "OK", 200
+    return "OK", 500
 
 
 @app.route("/greet")
