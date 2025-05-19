@@ -1,12 +1,12 @@
 - # ✅ Overview #
 
-      This guide walks you through:
+    This guide walks you through:
 
-      - Setting up Azure infrastructure
+    - Setting up Azure infrastructure
 
-      - Creating and configuring a GitHub Actions workflow
+    - Creating and configuring a GitHub Actions workflow
 
-      - Deploying and running a Python app on Azure App Service via CI/CD
+    - Deploying and running a Python app on Azure App Service via CI/CD
 
   # Setting up Azure infrastructure
 
@@ -155,8 +155,8 @@
   
   CLI testing tools:
   
-  - flake8
-  - pytest
+  - flake8(linter)
+  - pytest(functional test)
   
   
   
