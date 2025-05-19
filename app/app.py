@@ -9,7 +9,7 @@ def hello():
 
 
 @app.route("/healthz")
-def hello():
+def health():
     return "Hello, world!", 200
 
 
